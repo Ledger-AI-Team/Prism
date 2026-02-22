@@ -6,7 +6,12 @@
 
 import express from 'express';
 import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { runMonteCarlo } from '../projects/risk-engine/src/monte-carlo.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -14,6 +19,9 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+// Serve static files from React build
+app.use(express.static(path.join(__dirname, '../client/dist')));
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -158,13 +166,18 @@ app.get('/api/docs', (req, res) => {
   });
 });
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({
-    error: 'Not found',
-    path: req.path,
-    method: req.method,
-  });
+// Serve React app for all other routes (client-side routing)
+app.get('*', (req, res) => {
+  // If request is for /api/* or /health, return 404 JSON
+  if (req.path.startsWith('/api') || req.path === '/health') {
+    return res.status(404).json({
+      error: 'Not found',
+      path: req.path,
+      method: req.method,
+    });
+  }
+  // Otherwise serve React app
+  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
 });
 
 // Error handler
