@@ -123,12 +123,13 @@ const Dashboard = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <img 
-                src="/farther-logo.jpg" 
+                src="/farther-wordmark.jpg" 
                 alt="Farther" 
-                className="h-12 w-auto"
+                className="h-10 w-auto"
               />
+              <div className="h-8 w-px bg-[#5b6a71]"></div>
               <div>
-                <h1 className="text-3xl font-bold text-white">
+                <h1 className="text-2xl font-bold text-white">
                   Financial Path
                 </h1>
                 <p className="mt-1 text-[#6d9dbe]">
@@ -287,9 +288,9 @@ const Dashboard = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <img 
-                src="/farther-logo.jpg" 
+                src="/farther-symbol.jpg" 
                 alt="Farther" 
-                className="h-8 w-auto opacity-70"
+                className="h-6 w-auto opacity-60"
               />
               <div className="text-[#6d9dbe] text-sm">
                 © 2026 Farther, Inc. All rights reserved.
