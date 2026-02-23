@@ -1,0 +1,81 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: farther_prism_db
+    environment:
+      POSTGRES_DB: ${DB_NAME:-farther_prism}
+      POSTGRES_USER: ${DB_USER:-prism_api}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme}
+      POSTGRES_INITDB_ARGS: "-E UTF8 --locale=en_US.UTF-8"
+    volumes:
+      # Mount schema files for initialization
+      - ./schema:/docker-entrypoint-initdb.d:ro
+      # Persistent data volume
+      - postgres_data:/var/lib/postgresql/data
+      # Optional: Mount custom postgres config
+      # - ./postgresql.conf:/etc/postgresql/postgresql.conf:ro
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    networks:
+      - prism_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-prism_api} -d ${DB_NAME:-farther_prism}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Optional: pgAdmin for database management
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: farther_prism_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL:-admin@farther.com}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    ports:
+      - "${PGADMIN_PORT:-5050}:80"
+    networks:
+      - prism_network
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    profiles:
+      - admin  # Only start with: docker-compose --profile admin up
+
+  # Optional: Redis for caching and queue
+  redis:
+    image: redis:7-alpine
+    container_name: farther_prism_redis
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-changeme}
+    volumes:
+      - redis_data:/data
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    networks:
+      - prism_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    profiles:
+      - full  # Only start with: docker-compose --profile full up
+
+volumes:
+  postgres_data:
+    name: farther_prism_postgres_data
+  pgadmin_data:
+    name: farther_prism_pgadmin_data
+  redis_data:
+    name: farther_prism_redis_data
+
+networks:
+  prism_network:
+    name: farther_prism_network
+    driver: bridge
