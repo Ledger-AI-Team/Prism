@@ -1,9 +1,0 @@
-node_modules
-.git
-.gitignore
-README.md
-prd/
-research/
-.credentials
-memory/
-.openclaw/
