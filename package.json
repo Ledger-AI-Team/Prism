@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node api/server.js",
+    "build": "cd client && npm install && npm run build",
     "dev": "node --watch api/server.js",
     "test": "node --test"
   },
