@@ -25,8 +25,9 @@ app.use(cors());
 app.use(express.json());
 
 // Configure file upload
+const uploadsPath = path.join(__dirname, '../uploads');
 const upload = multer({
-  dest: 'uploads/',
+  dest: uploadsPath,
   limits: {
     fileSize: 10 * 1024 * 1024, // 10MB limit
   },
@@ -42,8 +43,9 @@ const upload = multer({
 });
 
 // Create uploads directory if it doesn't exist
-if (!fs.existsSync('uploads')) {
-  fs.mkdirSync('uploads');
+const uploadsDir = path.join(__dirname, '../uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
 // Serve static files from React build
