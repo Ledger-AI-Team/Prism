@@ -125,31 +125,27 @@ const Dashboard = () => {
         {/* Tools Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {tools.map((tool) => {
-            // Special card: Prism image with glass button
+            // Special card: Prism image with glass button BELOW
             if (tool.type === 'image-card') {
               return (
                 <div
                   key={tool.id}
                   onClick={() => handleToolClick(tool)}
-                  className="relative rounded-lg overflow-hidden cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-2xl"
-                  style={{ minHeight: '400px' }}
+                  className="rounded-lg overflow-hidden cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-2xl bg-[#5b6a71]"
                 >
-                  {/* Prism Background Image */}
-                  <div 
-                    className="absolute inset-0 bg-cover bg-center"
-                    style={{
-                      backgroundImage: 'url(/prism-hero.jpg)',
-                      backgroundPosition: 'center',
-                      backgroundSize: 'cover',
-                    }}
-                  />
+                  {/* Prism Image - Full size, no cropping */}
+                  <div className="w-full">
+                    <img 
+                      src="/prism-hero.jpg" 
+                      alt="Prism Planning Tool"
+                      className="w-full h-auto object-contain"
+                      style={{ display: 'block' }}
+                    />
+                  </div>
                   
-                  {/* Subtle overlay */}
-                  <div className="absolute inset-0 bg-black/10" />
-                  
-                  {/* Glass Button Overlay */}
-                  <div className="relative z-10 flex items-center justify-center h-full min-h-[400px]">
-                    <button className="group relative px-10 py-5 text-xl font-light tracking-wide text-white transition-all duration-300 hover:scale-110">
+                  {/* Glass Button BELOW Image */}
+                  <div className="p-6 flex items-center justify-center">
+                    <button className="group relative px-10 py-4 text-xl font-light tracking-wide text-white transition-all duration-300 hover:scale-105">
                       {/* Glass background */}
                       <div className="absolute inset-0 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl transition-all duration-300 group-hover:bg-white/20 group-hover:border-white/30" />
                       

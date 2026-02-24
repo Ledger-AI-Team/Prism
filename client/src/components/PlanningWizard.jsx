@@ -95,41 +95,44 @@ const PlanningWizard = () => {
       </header>
 
       {/* Wizard Content */}
-      <main>
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {currentStep === 1 && (
-          <ClientOnboarding onComplete={handleStepComplete} />
+          <ClientOnboarding
+            data={{ clientData }}
+            onUpdate={(key, value) => setClientData(value)}
+            onNext={() => handleStepComplete(clientData)}
+            isFirst={true}
+          />
         )}
         {currentStep === 2 && (
           <PortfolioBuilder
-            clientData={clientData}
-            onComplete={handleStepComplete}
+            data={{ clientData, portfolioData }}
+            onUpdate={(key, value) => setPortfolioData(value)}
+            onNext={() => handleStepComplete(portfolioData)}
             onBack={() => setCurrentStep(1)}
           />
         )}
         {currentStep === 3 && (
           <RiskAssessment
-            clientData={clientData}
-            portfolioData={portfolioData}
-            onComplete={handleStepComplete}
+            data={{ clientData, portfolioData, riskData }}
+            onUpdate={(key, value) => setRiskData(value)}
+            onNext={() => handleStepComplete(riskData)}
             onBack={() => setCurrentStep(2)}
           />
         )}
         {currentStep === 4 && (
           <MonteCarloResults
-            clientData={clientData}
-            portfolioData={portfolioData}
-            riskData={riskData}
-            onComplete={handleStepComplete}
+            data={{ clientData, portfolioData, riskData, simulationResults }}
+            onUpdate={(key, value) => setSimulationResults(value)}
+            onNext={() => handleStepComplete(simulationResults)}
             onBack={() => setCurrentStep(3)}
           />
         )}
         {currentStep === 5 && (
           <ReportGenerator
-            clientData={clientData}
-            portfolioData={portfolioData}
-            riskData={riskData}
-            simulationResults={simulationResults}
+            data={{ clientData, portfolioData, riskData, simulationResults }}
             onBack={() => setCurrentStep(4)}
+            onFinish={() => navigate('/')}
           />
         )}
       </main>
