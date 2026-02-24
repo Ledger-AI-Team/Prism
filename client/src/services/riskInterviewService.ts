@@ -113,12 +113,12 @@ export function getInitialQuestion(): Question {
     section: 'wealth',
     text: 'What is your current investable net worth?',
     options: [
-      { id: 'a', text: 'Under $500K', score: 5 },
-      { id: 'b', text: '$500K - $1M', score: 7 },
-      { id: 'c', text: '$1M - $5M', score: 10 },
-      { id: 'd', text: '$5M - $10M', score: 12 },
-      { id: 'e', text: '$10M - $50M', score: 13 },
       { id: 'f', text: 'Over $50M', score: 15 },
+      { id: 'e', text: '$10M - $50M', score: 13 },
+      { id: 'd', text: '$5M - $10M', score: 12 },
+      { id: 'c', text: '$1M - $5M', score: 10 },
+      { id: 'b', text: '$500K - $1M', score: 7 },
+      { id: 'a', text: 'Under $500K', score: 5 },
     ],
     rationale: 'Establishes wealth tier for adaptive questioning',
   };

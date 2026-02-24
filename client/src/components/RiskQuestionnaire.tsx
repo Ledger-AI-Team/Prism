@@ -51,11 +51,17 @@ export default function RiskQuestionnaire({ onComplete, onCancel }: Props) {
 
   /**
    * Shuffle options when question changes (prevent position bias)
+   * EXCEPT Q1 (wealth tier) - keep in monetary order (high to low)
    */
   const [shuffledOptions, setShuffledOptions] = useState(currentQuestion.options);
   
   useEffect(() => {
-    setShuffledOptions(shuffleArray(currentQuestion.options));
+    // Don't shuffle Q1 (wealth tier should be high → low)
+    if (currentQuestion.id === 'Q1') {
+      setShuffledOptions(currentQuestion.options);
+    } else {
+      setShuffledOptions(shuffleArray(currentQuestion.options));
+    }
   }, [currentQuestion.id]);
 
   /**
