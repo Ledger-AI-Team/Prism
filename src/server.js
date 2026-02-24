@@ -16,6 +16,7 @@ import { healthCheck } from './db/pool.js';
 import householdRoutes from './routes/households.js';
 import planRoutes from './routes/plans.js';
 import { runMonteCarlo } from '../projects/risk-engine/src/monte-carlo.js';
+import { generateQuestion } from './services/riskAIService.js';
 
 const app = express();
 const PORT = process.env.API_PORT || process.env.PORT || 3000;
@@ -117,6 +118,43 @@ app.post('/api/monte-carlo', (req, res) => {
   } catch (error) {
     console.error('Monte Carlo error:', error);
     res.status(500).json({ error: error.message });
+  }
+});
+
+// Risk Profile - AI Question Generation
+app.post('/api/risk/generate-question', async (req, res) => {
+  try {
+    const { questionNumber, context, wealthTier, experience, totalScore } = req.body;
+
+    // Validate inputs
+    if (!questionNumber || questionNumber < 1 || questionNumber > 15) {
+      return res.status(400).json({
+        error: 'Invalid questionNumber (must be 1-15)',
+      });
+    }
+
+    // Generate question using Claude
+    const question = await generateQuestion({
+      questionNumber,
+      context: context || [],
+      wealthTier: wealthTier || 'affluent',
+      experience: experience || 'intermediate',
+      totalScore: totalScore || 0,
+    });
+
+    res.json({
+      question,
+      metadata: {
+        model: 'claude-3-5-sonnet-20240620',
+        timestamp: new Date().toISOString(),
+      },
+    });
+  } catch (error) {
+    console.error('[Risk AI] Error:', error);
+    res.status(500).json({
+      error: 'Failed to generate question',
+      detail: error.message,
+    });
   }
 });
 

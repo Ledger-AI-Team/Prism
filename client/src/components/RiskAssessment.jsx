@@ -1,184 +1,182 @@
+/**
+ * Risk Assessment - Main Container
+ * 
+ * Orchestrates the AI-driven risk profile questionnaire:
+ * 1. Welcome screen
+ * 2. Dynamic questionnaire
+ * 3. Results dashboard
+ */
+
 import { useState } from 'react';
-import { AlertTriangle, TrendingUp, Shield } from 'lucide-react';
+import RiskQuestionnaire from './RiskQuestionnaire.tsx';
+import RiskResults from './RiskResults.tsx';
+import { calculateAssessment } from '../services/riskScoringService.ts';
 
-const questions = [
-  {
-    id: 'timeHorizon',
-    question: 'What is your investment time horizon?',
-    options: [
-      { value: 1, label: 'Less than 3 years', score: 1 },
-      { value: 2, label: '3-5 years', score: 2 },
-      { value: 3, label: '5-10 years', score: 3 },
-      { value: 4, label: '10-20 years', score: 4 },
-      { value: 5, label: 'More than 20 years', score: 5 },
-    ],
-  },
-  {
-    id: 'marketDrop',
-    question: 'If your portfolio dropped 20% in value, what would you do?',
-    options: [
-      { value: 1, label: 'Sell everything immediately', score: 1 },
-      { value: 2, label: 'Sell some investments', score: 2 },
-      { value: 3, label: 'Hold and wait', score: 3 },
-      { value: 4, label: 'Buy more at lower prices', score: 4 },
-      { value: 5, label: 'Aggressively buy more', score: 5 },
-    ],
-  },
-  {
-    id: 'experience',
-    question: 'How would you describe your investment experience?',
-    options: [
-      { value: 1, label: 'No experience', score: 1 },
-      { value: 2, label: 'Limited experience', score: 2 },
-      { value: 3, label: 'Moderate experience', score: 3 },
-      { value: 4, label: 'Experienced investor', score: 4 },
-      { value: 5, label: 'Professional/Expert', score: 5 },
-    ],
-  },
-  {
-    id: 'priority',
-    question: 'What is your primary investment goal?',
-    options: [
-      { value: 1, label: 'Preserve capital at all costs', score: 1 },
-      { value: 2, label: 'Generate steady income', score: 2 },
-      { value: 3, label: 'Balance growth and stability', score: 3 },
-      { value: 4, label: 'Grow wealth aggressively', score: 4 },
-      { value: 5, label: 'Maximize returns, accept high risk', score: 5 },
-    ],
-  },
-  {
-    id: 'reaction',
-    question: 'How do you feel about market volatility?',
-    options: [
-      { value: 1, label: 'Very uncomfortable, causes stress', score: 1 },
-      { value: 2, label: 'Somewhat uncomfortable', score: 2 },
-      { value: 3, label: 'Neutral, part of investing', score: 3 },
-      { value: 4, label: 'Comfortable, see opportunities', score: 4 },
-      { value: 5, label: 'Excited by opportunities', score: 5 },
-    ],
-  },
-];
+export default function RiskAssessment() {
+  const [view, setView] = useState('welcome'); // welcome | questionnaire | results
+  const [assessmentResult, setAssessmentResult] = useState(null);
 
-export default function RiskAssessment({ data, onUpdate, onNext, onPrev }) {
-  const [answers, setAnswers] = useState(data.riskProfile?.answers || {});
-
-  const handleAnswer = (questionId, option) => {
-    setAnswers({ ...answers, [questionId]: option });
+  const handleStart = () => {
+    setView('questionnaire');
   };
 
-  const calculateRiskScore = () => {
-    const scores = Object.values(answers).map(a => a.score);
-    if (scores.length === 0) return 0;
-    const total = scores.reduce((sum, score) => sum + score, 0);
-    return Math.round((total / (questions.length * 5)) * 100);
+  const handleComplete = (questionHistory) => {
+    // Calculate scores and generate result
+    const result = calculateAssessment(questionHistory);
+    setAssessmentResult(result);
+    setView('results');
   };
 
-  const getRiskLevel = (score) => {
-    if (score <= 20) return { label: 'Conservative', color: 'green', icon: Shield };
-    if (score <= 40) return { label: 'Moderately Conservative', color: 'blue', icon: Shield };
-    if (score <= 60) return { label: 'Moderate', color: 'yellow', icon: TrendingUp };
-    if (score <= 80) return { label: 'Moderately Aggressive', color: 'orange', icon: TrendingUp };
-    return { label: 'Aggressive', color: 'red', icon: AlertTriangle };
+  const handleRestart = () => {
+    setAssessmentResult(null);
+    setView('welcome');
   };
 
-  const allAnswered = Object.keys(answers).length === questions.length;
-  const riskScore = calculateRiskScore();
-  const riskLevel = getRiskLevel(riskScore);
-  const Icon = riskLevel.icon;
+  const handleClose = () => {
+    // TODO: Save to database
+    console.log('[Risk Assessment] Saving result:', assessmentResult);
+    alert('Assessment saved! (TODO: Implement database save)');
+    window.location.href = '/'; // Return to dashboard
+  };
 
-  const handleContinue = () => {
-    if (!allAnswered) {
-      alert('Please answer all questions to continue');
-      return;
+  const handleCancel = () => {
+    if (confirm('Are you sure you want to cancel? Your progress will be lost.')) {
+      setView('welcome');
     }
-    onUpdate('riskProfile', { answers, score: riskScore, level: riskLevel.label });
-    onNext();
   };
 
-  return (
-    <div>
-      <div className="mb-8">
-        <h2 className="text-3xl font-bold text-slate-900 mb-2">Risk Assessment</h2>
-        <p className="text-slate-600">Answer these questions to determine your client's risk tolerance.</p>
-      </div>
-
-      {/* Questions */}
-      <div className="space-y-8 mb-8">
-        {questions.map((q, index) => (
-          <div key={q.id} className="p-6 bg-slate-50 rounded-lg border border-slate-200">
-            <div className="flex items-start mb-4">
-              <div className="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold mr-3">
-                {index + 1}
-              </div>
-              <h3 className="text-lg font-semibold text-slate-900 pt-1">{q.question}</h3>
-            </div>
-            <div className="space-y-2 ml-11">
-              {q.options.map((option) => (
-                <button
-                  key={option.value}
-                  onClick={() => handleAnswer(q.id, option)}
-                  className={`w-full text-left px-4 py-3 rounded-lg border-2 transition-all ${
-                    answers[q.id]?.value === option.value
-                      ? 'border-blue-600 bg-blue-50 text-blue-900'
-                      : 'border-slate-200 bg-white hover:border-blue-300'
-                  }`}
-                >
-                  {option.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Risk Score Display */}
-      {allAnswered && (
-        <div className="mb-8 p-8 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border-2 border-blue-200">
-          <div className="text-center">
-            <div className="flex items-center justify-center mb-4">
-              <Icon className={`w-16 h-16 text-${riskLevel.color}-600`} />
-            </div>
-            <h3 className="text-2xl font-bold text-slate-900 mb-2">Risk Profile: {riskLevel.label}</h3>
-            <div className="text-5xl font-bold text-blue-600 mb-4">{riskScore}/100</div>
-            <p className="text-slate-600 max-w-2xl mx-auto">
-              This score represents your client's behavioral risk tolerance based on their responses.
-              We'll compare this with their financial capacity in the next step.
+  // Welcome Screen
+  if (view === 'welcome') {
+    return (
+      <div className="min-h-screen bg-[#333333] flex items-center justify-center p-4">
+        <div className="max-w-4xl w-full">
+          {/* Header */}
+          <div className="text-center mb-12">
+            <img 
+              src="/farther-wordmark.png" 
+              alt="Farther" 
+              className="h-12 w-auto mx-auto mb-6 opacity-80"
+            />
+            <h1 className="text-4xl font-bold text-white mb-4">
+              Risk Profile Questionnaire
+            </h1>
+            <p className="text-[#6d9dbe] text-lg">
+              AI-powered adaptive assessment to determine your ideal investment strategy
             </p>
           </div>
 
-          {/* Score Bar */}
-          <div className="mt-6">
-            <div className="h-4 bg-slate-200 rounded-full overflow-hidden">
-              <div
-                className={`h-full bg-gradient-to-r from-green-500 via-yellow-500 to-red-500`}
-                style={{ width: `${riskScore}%` }}
-              />
+          {/* Info Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <div className="bg-[#5b6a71] rounded-lg p-6 border border-[#6d9dbe]/20">
+              <div className="text-3xl mb-3">🎯</div>
+              <h3 className="text-white font-bold mb-2">Adaptive Questions</h3>
+              <p className="text-[#ffffff] opacity-80 text-sm">
+                AI generates contextual questions based on your wealth tier and experience
+              </p>
             </div>
-            <div className="flex justify-between mt-2 text-xs text-slate-600">
-              <span>Conservative</span>
-              <span>Moderate</span>
-              <span>Aggressive</span>
+
+            <div className="bg-[#5b6a71] rounded-lg p-6 border border-[#6d9dbe]/20">
+              <div className="text-3xl mb-3">⚡</div>
+              <h3 className="text-white font-bold mb-2">Zero Latency</h3>
+              <p className="text-[#ffffff] opacity-80 text-sm">
+                Predictive prefetching ensures instant transitions between questions
+              </p>
+            </div>
+
+            <div className="bg-[#5b6a71] rounded-lg p-6 border border-[#6d9dbe]/20">
+              <div className="text-3xl mb-3">📊</div>
+              <h3 className="text-white font-bold mb-2">Dual-Dimension Scoring</h3>
+              <p className="text-[#ffffff] opacity-80 text-sm">
+                Measures both financial capacity and behavioral willingness to take risk
+              </p>
             </div>
           </div>
-        </div>
-      )}
 
-      {/* Navigation */}
-      <div className="flex justify-between pt-6 border-t border-slate-200">
-        <button
-          onClick={onPrev}
-          className="px-8 py-3 border-2 border-farther-slate text-farther-charcoal font-semibold rounded-lg hover:bg-gray-50 transition-all"
-        >
-          ← Back
-        </button>
-        <button
-          onClick={handleContinue}
-          disabled={!allAnswered}
-          className="px-8 py-3 bg-farther-teal text-white font-semibold rounded-lg hover:bg-farther-teal/90 transition-all shadow-md hover:shadow-xl disabled:bg-farther-slate disabled:cursor-not-allowed focus:ring-2 focus:ring-farther-teal"
-        >
-          Run Monte Carlo Projection →
-        </button>
+          {/* What to Expect */}
+          <div className="bg-[#5b6a71] rounded-lg p-8 border border-[#6d9dbe]/20 mb-8">
+            <h2 className="text-2xl font-bold text-white mb-4">What to Expect</h2>
+            <div className="space-y-4 text-[#ffffff] opacity-80">
+              <div className="flex items-start">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#1a7a82] flex items-center justify-center text-white font-bold mr-3">
+                  1
+                </div>
+                <div>
+                  <div className="font-bold text-white">15 Questions</div>
+                  <div className="text-sm">Takes approximately 5-7 minutes</div>
+                </div>
+              </div>
+
+              <div className="flex items-start">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#1a7a82] flex items-center justify-center text-white font-bold mr-3">
+                  2
+                </div>
+                <div>
+                  <div className="font-bold text-white">Adaptive Flow</div>
+                  <div className="text-sm">Questions adapt based on your answers and profile</div>
+                </div>
+              </div>
+
+              <div className="flex items-start">
+                <div className="flex-shrink-0 w-8 h-8 rounded-full bg-[#1a7a82] flex items-center justify-center text-white font-bold mr-3">
+                  3
+                </div>
+                <div>
+                  <div className="font-bold text-white">Comprehensive Results</div>
+                  <div className="text-sm">
+                    Detailed breakdown with Behavioral Investor Type, recommended allocation, and compliance trail
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* CTA */}
+          <div className="text-center">
+            <button
+              onClick={handleStart}
+              className="px-12 py-4 bg-[#1a7a82] text-white text-lg font-bold rounded-lg hover:bg-[#1a7a82]/80 transition"
+            >
+              Start Assessment →
+            </button>
+            <p className="text-[#6d9dbe] text-sm mt-4">
+              This assessment is compliant with DOL PTE 2020-02
+            </p>
+          </div>
+
+          {/* Footer */}
+          <div className="mt-12 text-center">
+            <a
+              href="/"
+              className="text-[#6d9dbe] hover:text-white transition"
+            >
+              ← Back to Dashboard
+            </a>
+          </div>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
+
+  // Questionnaire View
+  if (view === 'questionnaire') {
+    return (
+      <RiskQuestionnaire
+        onComplete={handleComplete}
+        onCancel={handleCancel}
+      />
+    );
+  }
+
+  // Results View
+  if (view === 'results' && assessmentResult) {
+    return (
+      <RiskResults
+        result={assessmentResult}
+        onRestart={handleRestart}
+        onClose={handleClose}
+      />
+    );
+  }
+
+  return null;
 }
