@@ -69,7 +69,7 @@ const PlanningWizard = () => {
               </button>
               <div className="h-6 w-px bg-[#5b6a71]"></div>
               <h1 className="text-xl font-bold text-[#FCFDFC]">
-                Prism - Financial Planning
+                Prism
               </h1>
             </div>
             <div className="flex items-center space-x-2">

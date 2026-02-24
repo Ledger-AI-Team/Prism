@@ -50,10 +50,10 @@ function App() {
         <Route path="/risk" element={<RiskAssessment />} />
 
         {/* Coming Soon Tools */}
-        <Route path="/portfolio" element={<ComingSoon toolName="Portfolio Analysis" />} />
-        <Route path="/proposals" element={<ComingSoon toolName="Client Proposals" />} />
-        <Route path="/reports" element={<ComingSoon toolName="Client Reporting" />} />
-        <Route path="/scenarios" element={<ComingSoon toolName="What-If Scenarios" />} />
+        <Route path="/portfolio" element={<ComingSoon toolName="Focus" />} />
+        <Route path="/proposals" element={<ComingSoon toolName="Proposify" />} />
+        <Route path="/reports" element={<ComingSoon toolName="Narrative" />} />
+        <Route path="/alternatives" element={<ComingSoon toolName="Beyond" />} />
 
         {/* 404 Redirect */}
         <Route path="*" element={<Navigate to="/" replace />} />

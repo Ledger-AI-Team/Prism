@@ -14,28 +14,17 @@ const Dashboard = () => {
     {
       id: 'prism',
       name: 'Prism',
+      tagline: 'See clearly. Go farther.',
       type: 'image-card', // Special card type
       route: '/planning',
       status: 'active',
     },
     {
-      id: 'portfolio',
-      name: 'Portfolio Analysis',
-      description: 'Performance attribution, rebalancing, and tax-loss harvesting',
-      icon: '📈',
-      route: '/portfolio',
-      status: 'coming_soon',
-      features: [
-        'Performance attribution',
-        'Asset allocation analysis',
-        'Tax-loss harvesting opportunities',
-      ],
-    },
-    {
-      id: 'risk',
-      name: 'Risk Assessment',
+      id: 'compass',
+      name: 'Compass',
+      tagline: 'Navigate risk with clarity. Go farther.',
       description: 'AI-powered adaptive questionnaire with dual-dimension scoring',
-      icon: '⚖️',
+      icon: '🧭',
       route: '/risk',
       status: 'active',
       features: [
@@ -45,8 +34,23 @@ const Dashboard = () => {
       ],
     },
     {
-      id: 'proposals',
-      name: 'Client Proposals',
+      id: 'focus',
+      name: 'Focus',
+      tagline: 'Focus on what matters most. Go farther.',
+      description: 'Performance attribution, rebalancing, and tax-loss harvesting',
+      icon: '🎯',
+      route: '/portfolio',
+      status: 'coming_soon',
+      features: [
+        'Performance attribution',
+        'Asset allocation analysis',
+        'Tax-loss harvesting opportunities',
+      ],
+    },
+    {
+      id: 'proposify',
+      name: 'Proposify',
+      tagline: 'Craft compelling proposals. Go farther.',
       description: 'Branded pitch decks, fee calculators, and engagement letters',
       icon: '📄',
       route: '/proposals',
@@ -58,10 +62,11 @@ const Dashboard = () => {
       ],
     },
     {
-      id: 'reports',
-      name: 'Client Reporting',
+      id: 'narrative',
+      name: 'Narrative',
+      tagline: 'Turn data into stories. Go farther.',
       description: 'Performance reports, tax summaries, and compliance exports',
-      icon: '📋',
+      icon: '📖',
       route: '/reports',
       status: 'coming_soon',
       features: [
@@ -71,16 +76,17 @@ const Dashboard = () => {
       ],
     },
     {
-      id: 'scenarios',
-      name: 'What-If Scenarios',
-      description: 'Model life events: retirement, home purchase, education funding',
-      icon: '🔮',
-      route: '/scenarios',
+      id: 'beyond',
+      name: 'Beyond',
+      tagline: 'Explore opportunities beyond the mainstream. Go farther.',
+      description: 'Alternative investment due diligence and opportunity assessment',
+      icon: '🚀',
+      route: '/alternatives',
       status: 'coming_soon',
       features: [
-        'Early retirement modeling',
-        'Home purchase impact',
-        'Education funding strategies',
+        'Alternative investment reviews',
+        'Due diligence frameworks',
+        'Opportunity scoring',
       ],
     },
   ];
@@ -114,15 +120,20 @@ const Dashboard = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Section Header - Logo & Tagline */}
         <div className="mb-12 text-center">
-          <div className="flex justify-center mb-6">
+          <div className="flex justify-center mb-3">
             <img 
               src="/farther-logo-main.png" 
               alt="Farther" 
               className="h-24 w-auto"
             />
           </div>
+          {/* Suite Name */}
+          <h1 className="text-2xl font-light text-[#FCFDFC] mb-6 tracking-wide">
+            Intelligence Suite
+          </h1>
+          {/* Positioning Line */}
           <p className="text-[#FCFDFC] text-lg max-w-3xl mx-auto opacity-90 leading-relaxed">
-            An Intelligent Wealth Platform that unifies planning, portfolios, risk, proposals, reporting, and alternatives - so you can see clearly and go
+            An Intelligent Wealth Platform that unifies planning, portfolios, risk, proposals, reporting, and alternatives—so you can see clearly and go farther.
           </p>
         </div>
 
@@ -147,20 +158,28 @@ const Dashboard = () => {
                     />
                   </div>
                   
-                  {/* Glass Button BELOW Image */}
-                  <div className="p-6 flex items-center justify-center">
-                    <button className="group relative px-10 py-4 text-xl font-light tracking-wide text-[#FCFDFC] transition-all duration-300 hover:scale-105">
-                      {/* Glass background */}
-                      <div className="absolute inset-0 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl transition-all duration-300 group-hover:bg-white/20 group-hover:border-white/30" />
-                      
-                      {/* Shine effect */}
-                      <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shine" />
-                      </div>
-                      
-                      {/* Button text */}
-                      <span className="relative z-10">Begin Planning</span>
-                    </button>
+                  {/* Tagline & Button BELOW Image */}
+                  <div className="p-6">
+                    {/* Tagline */}
+                    <p className="text-center text-[#FCFDFC] text-sm opacity-70 mb-4 italic">
+                      {tool.tagline}
+                    </p>
+                    
+                    {/* Glass Button */}
+                    <div className="flex items-center justify-center">
+                      <button className="group relative px-10 py-4 text-xl font-light tracking-wide text-[#FCFDFC] transition-all duration-300 hover:scale-105">
+                        {/* Glass background */}
+                        <div className="absolute inset-0 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl transition-all duration-300 group-hover:bg-white/20 group-hover:border-white/30" />
+                        
+                        {/* Shine effect */}
+                        <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shine" />
+                        </div>
+                        
+                        {/* Button text */}
+                        <span className="relative z-10">Begin Planning</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               );
@@ -200,6 +219,10 @@ const Dashboard = () => {
                 <h3 className="text-xl font-bold text-[#FCFDFC] mb-2">
                   {tool.name}
                 </h3>
+                {/* Tagline */}
+                <p className="text-[#FCFDFC] text-sm mb-3 italic opacity-70">
+                  {tool.tagline}
+                </p>
                 <p className="text-[#FCFDFC] opacity-80 text-sm mb-4">
                   {tool.description}
                 </p>
