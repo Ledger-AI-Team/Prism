@@ -14,7 +14,7 @@ const Dashboard = () => {
     {
       id: 'prism',
       name: 'Prism',
-      tagline: 'See clearly. Go farther.',
+      tagline: 'See clearly. Go Farther.',
       type: 'image-card', // Special card type
       route: '/planning',
       status: 'active',
@@ -22,7 +22,7 @@ const Dashboard = () => {
     {
       id: 'compass',
       name: 'Compass',
-      tagline: 'Navigate risk with clarity. Go farther.',
+      tagline: 'Navigate risk with clarity. Go Farther.',
       description: 'AI-powered adaptive questionnaire with dual-dimension scoring',
       icon: '🧭',
       route: '/risk',
@@ -36,7 +36,7 @@ const Dashboard = () => {
     {
       id: 'focus',
       name: 'Focus',
-      tagline: 'Focus on what matters most. Go farther.',
+      tagline: 'Focus on what matters most. Go Farther.',
       description: 'Performance attribution, rebalancing, and tax-loss harvesting',
       icon: '🎯',
       route: '/portfolio',
@@ -50,7 +50,7 @@ const Dashboard = () => {
     {
       id: 'proposify',
       name: 'Proposify',
-      tagline: 'Craft compelling proposals. Go farther.',
+      tagline: 'Craft compelling proposals. Go Farther.',
       description: 'Branded pitch decks, fee calculators, and engagement letters',
       icon: '📄',
       route: '/proposals',
@@ -64,7 +64,7 @@ const Dashboard = () => {
     {
       id: 'narrative',
       name: 'Narrative',
-      tagline: 'Turn data into stories. Go farther.',
+      tagline: 'Turn data into stories. Go Farther.',
       description: 'Performance reports, tax summaries, and compliance exports',
       icon: '📖',
       route: '/reports',
@@ -78,7 +78,7 @@ const Dashboard = () => {
     {
       id: 'beyond',
       name: 'Beyond',
-      tagline: 'Explore opportunities beyond the mainstream. Go farther.',
+      tagline: 'Explore opportunities beyond the mainstream. Go Farther.',
       description: 'Alternative investment due diligence and opportunity assessment',
       icon: '🚀',
       route: '/alternatives',
@@ -133,7 +133,7 @@ const Dashboard = () => {
           </h1>
           {/* Positioning Line */}
           <p className="text-[#FCFDFC] text-lg max-w-3xl mx-auto opacity-90 leading-relaxed">
-            An Intelligent Wealth Platform that unifies planning, portfolios, risk, proposals, reporting, and alternatives—so you can see clearly and go farther.
+            An Intelligent Wealth Platform that unifies planning, portfolios, risk, proposals, reporting, and alternatives—so you can see clearly and Go Farther.
           </p>
         </div>
 
