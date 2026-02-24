@@ -112,14 +112,13 @@ const Dashboard = () => {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Section Header */}
-        <div className="mb-12 text-center">
-          <h2 className="text-3xl font-bold text-[#FCFDFC] mb-4">
-            Intelligent Wealth Platforms
-          </h2>
-          <p className="text-[#FCFDFC] text-lg max-w-2xl mx-auto opacity-80">
-            Institutional-grade tools that work together seamlessly
-          </p>
+        {/* Section Header - Logo */}
+        <div className="mb-12 flex justify-center">
+          <img 
+            src="/farther-logo-main.png" 
+            alt="Farther" 
+            className="h-24 w-auto"
+          />
         </div>
 
         {/* Tools Grid */}
