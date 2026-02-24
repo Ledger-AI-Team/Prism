@@ -54,8 +54,8 @@ export default function MonteCarloResults({ data, onUpdate, onNext, onPrev }) {
     return (
       <div className="text-center py-20">
         <Loader2 className="w-16 h-16 animate-spin text-blue-600 mx-auto mb-4" />
-        <h3 className="text-2xl font-bold text-slate-900 mb-2">Running Monte Carlo Simulation</h3>
-        <p className="text-slate-600">Analyzing 10,000 possible scenarios...</p>
+        <h3 className="text-2xl font-bold text-[#FCFDFC] mb-2">Running Monte Carlo Simulation</h3>
+        <p className="text-[#FCFDFC] opacity-80">Analyzing 10,000 possible scenarios...</p>
       </div>
     );
   }
@@ -64,8 +64,8 @@ export default function MonteCarloResults({ data, onUpdate, onNext, onPrev }) {
     return (
       <div className="text-center py-20">
         <AlertCircle className="w-16 h-16 text-red-600 mx-auto mb-4" />
-        <h3 className="text-2xl font-bold text-slate-900 mb-2">Simulation Failed</h3>
-        <p className="text-slate-600 mb-6">{error}</p>
+        <h3 className="text-2xl font-bold text-[#FCFDFC] mb-2">Simulation Failed</h3>
+        <p className="text-[#FCFDFC] opacity-80 mb-6">{error}</p>
         <button
           onClick={runSimulation}
           className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
@@ -86,8 +86,8 @@ export default function MonteCarloResults({ data, onUpdate, onNext, onPrev }) {
   return (
     <div>
       <div className="mb-8">
-        <h2 className="text-3xl font-bold text-slate-900 mb-2">Monte Carlo Projection</h2>
-        <p className="text-slate-600">
+        <h2 className="text-3xl font-bold text-[#FCFDFC] mb-2">Monte Carlo Projection</h2>
+        <p className="text-[#FCFDFC] opacity-80">
           Based on 10,000 simulated scenarios over {results.parameters.years} years
         </p>
       </div>
@@ -96,7 +96,7 @@ export default function MonteCarloResults({ data, onUpdate, onNext, onPrev }) {
       <div className="grid grid-cols-4 gap-6 mb-8">
         <div className="bg-white p-6 rounded-lg border-2 border-slate-200 shadow-sm">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-slate-600">Success Rate</span>
+            <span className="text-sm font-medium text-[#FCFDFC] opacity-80">Success Rate</span>
             {isSuccess ? (
               <TrendingUp className="w-5 h-5 text-green-600" />
             ) : (
@@ -106,46 +106,46 @@ export default function MonteCarloResults({ data, onUpdate, onNext, onPrev }) {
           <div className={`text-4xl font-bold ${isSuccess ? 'text-green-600' : 'text-red-600'}`}>
             {successRate.toFixed(1)}%
           </div>
-          <p className="text-xs text-slate-500 mt-2">
+          <p className="text-xs text-[#FCFDFC] opacity-60 mt-2">
             Probability of meeting goals
           </p>
         </div>
 
         <div className="bg-white p-6 rounded-lg border-2 border-slate-200 shadow-sm">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-slate-600">Median Outcome</span>
+            <span className="text-sm font-medium text-[#FCFDFC] opacity-80">Median Outcome</span>
             <Target className="w-5 h-5 text-blue-600" />
           </div>
-          <div className="text-3xl font-bold text-slate-900">
+          <div className="text-3xl font-bold text-[#FCFDFC]">
             ${(medianFinalValue / 1000000).toFixed(2)}M
           </div>
-          <p className="text-xs text-slate-500 mt-2">
+          <p className="text-xs text-[#FCFDFC] opacity-60 mt-2">
             Most likely final value
           </p>
         </div>
 
         <div className="bg-white p-6 rounded-lg border-2 border-slate-200 shadow-sm">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-slate-600">Best Case (95th)</span>
+            <span className="text-sm font-medium text-[#FCFDFC] opacity-80">Best Case (95th)</span>
             <DollarSign className="w-5 h-5 text-green-600" />
           </div>
           <div className="text-3xl font-bold text-green-600">
             ${(percentile95 / 1000000).toFixed(2)}M
           </div>
-          <p className="text-xs text-slate-500 mt-2">
+          <p className="text-xs text-[#FCFDFC] opacity-60 mt-2">
             Top 5% of scenarios
           </p>
         </div>
 
         <div className="bg-white p-6 rounded-lg border-2 border-slate-200 shadow-sm">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-slate-600">Worst Case (5th)</span>
+            <span className="text-sm font-medium text-[#FCFDFC] opacity-80">Worst Case (5th)</span>
             <AlertCircle className="w-5 h-5 text-orange-600" />
           </div>
           <div className="text-3xl font-bold text-orange-600">
             ${(percentile5 / 1000000).toFixed(2)}M
           </div>
-          <p className="text-xs text-slate-500 mt-2">
+          <p className="text-xs text-[#FCFDFC] opacity-60 mt-2">
             Bottom 5% of scenarios
           </p>
         </div>
@@ -179,41 +179,41 @@ export default function MonteCarloResults({ data, onUpdate, onNext, onPrev }) {
 
       {/* Portfolio Parameters */}
       <div className="bg-slate-50 p-6 rounded-lg border border-slate-200 mb-8">
-        <h3 className="font-bold text-slate-900 mb-4">Simulation Parameters</h3>
+        <h3 className="font-bold text-[#FCFDFC] mb-4">Simulation Parameters</h3>
         <div className="grid grid-cols-3 gap-4 text-sm">
           <div>
-            <span className="text-slate-600">Initial Value:</span>
-            <span className="ml-2 font-medium text-slate-900">
+            <span className="text-[#FCFDFC] opacity-80">Initial Value:</span>
+            <span className="ml-2 font-medium text-[#FCFDFC]">
               ${results.parameters.initialValue.toLocaleString()}
             </span>
           </div>
           <div>
-            <span className="text-slate-600">Expected Return:</span>
-            <span className="ml-2 font-medium text-slate-900">
+            <span className="text-[#FCFDFC] opacity-80">Expected Return:</span>
+            <span className="ml-2 font-medium text-[#FCFDFC]">
               {(results.parameters.expectedReturn * 100).toFixed(1)}%
             </span>
           </div>
           <div>
-            <span className="text-slate-600">Volatility:</span>
-            <span className="ml-2 font-medium text-slate-900">
+            <span className="text-[#FCFDFC] opacity-80">Volatility:</span>
+            <span className="ml-2 font-medium text-[#FCFDFC]">
               {(results.parameters.volatility * 100).toFixed(1)}%
             </span>
           </div>
           <div>
-            <span className="text-slate-600">Time Horizon:</span>
-            <span className="ml-2 font-medium text-slate-900">
+            <span className="text-[#FCFDFC] opacity-80">Time Horizon:</span>
+            <span className="ml-2 font-medium text-[#FCFDFC]">
               {results.parameters.years} years
             </span>
           </div>
           <div>
-            <span className="text-slate-600">Annual Withdrawal:</span>
-            <span className="ml-2 font-medium text-slate-900">
+            <span className="text-[#FCFDFC] opacity-80">Annual Withdrawal:</span>
+            <span className="ml-2 font-medium text-[#FCFDFC]">
               ${results.parameters.annualWithdrawal.toLocaleString()}
             </span>
           </div>
           <div>
-            <span className="text-slate-600">Execution Time:</span>
-            <span className="ml-2 font-medium text-slate-900">
+            <span className="text-[#FCFDFC] opacity-80">Execution Time:</span>
+            <span className="ml-2 font-medium text-[#FCFDFC]">
               {executionTimeMs.toFixed(0)}ms
             </span>
           </div>
@@ -224,7 +224,7 @@ export default function MonteCarloResults({ data, onUpdate, onNext, onPrev }) {
       <div className="flex justify-between pt-6 border-t border-slate-200">
         <button
           onClick={onPrev}
-          className="px-8 py-3 border-2 border-farther-slate text-farther-charcoal font-semibold rounded-lg hover:bg-gray-50 transition-all"
+          className="px-8 py-3 border-2 border-farther-slate text-[#FCFDFC] font-semibold rounded-lg hover:bg-gray-50 transition-all"
         >
           ← Back
         </button>

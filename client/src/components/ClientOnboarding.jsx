@@ -46,15 +46,15 @@ export default function ClientOnboarding({ data, onUpdate, onNext, isFirst }) {
   return (
     <div>
       <div className="mb-8">
-        <h2 className="text-3xl font-bold text-farther-navy mb-2">Client Information</h2>
-        <p className="text-farther-gray-600">Let's start by gathering some basic information about your client.</p>
+        <h2 className="text-3xl font-bold text-[#FCFDFC] mb-2">Client Information</h2>
+        <p className="text-[#FCFDFC] opacity-70">Let's start by gathering some basic information about your client.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Name Fields */}
         <div className="grid grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-[#FCFDFC] mb-2">
               <User className="inline w-4 h-4 mr-1" />
               First Name
             </label>
@@ -71,7 +71,7 @@ export default function ClientOnboarding({ data, onUpdate, onNext, isFirst }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-[#FCFDFC] mb-2">
               <User className="inline w-4 h-4 mr-1" />
               Last Name
             </label>
@@ -90,7 +90,7 @@ export default function ClientOnboarding({ data, onUpdate, onNext, isFirst }) {
 
         {/* Email */}
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">
+          <label className="block text-sm font-medium text-[#FCFDFC] mb-2">
             <Mail className="inline w-4 h-4 mr-1" />
             Email Address
           </label>
@@ -109,7 +109,7 @@ export default function ClientOnboarding({ data, onUpdate, onNext, isFirst }) {
         {/* Age & Retirement Age */}
         <div className="grid grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-[#FCFDFC] mb-2">
               <Calendar className="inline w-4 h-4 mr-1" />
               Current Age
             </label>
@@ -126,7 +126,7 @@ export default function ClientOnboarding({ data, onUpdate, onNext, isFirst }) {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-700 mb-2">
+            <label className="block text-sm font-medium text-[#FCFDFC] mb-2">
               <Target className="inline w-4 h-4 mr-1" />
               Target Retirement Age
             </label>
@@ -142,16 +142,16 @@ export default function ClientOnboarding({ data, onUpdate, onNext, isFirst }) {
 
         {/* Financial Information */}
         <div className="border-t border-slate-200 pt-6 mt-6">
-          <h3 className="text-lg font-semibold text-slate-900 mb-4">Financial Overview</h3>
+          <h3 className="text-lg font-semibold text-[#FCFDFC] mb-4">Financial Overview</h3>
           
           <div className="grid grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
+              <label className="block text-sm font-medium text-[#FCFDFC] mb-2">
                 <DollarSign className="inline w-4 h-4 mr-1" />
                 Current Savings / Portfolio Value
               </label>
               <div className="relative">
-                <span className="absolute left-4 top-3.5 text-slate-500">$</span>
+                <span className="absolute left-4 top-3.5 text-[#FCFDFC] opacity-50">$</span>
                 <input
                   type="number"
                   value={formData.currentSavings}
@@ -166,12 +166,12 @@ export default function ClientOnboarding({ data, onUpdate, onNext, isFirst }) {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-slate-700 mb-2">
+              <label className="block text-sm font-medium text-[#FCFDFC] mb-2">
                 <DollarSign className="inline w-4 h-4 mr-1" />
                 Retirement Income Goal (Annual)
               </label>
               <div className="relative">
-                <span className="absolute left-4 top-3.5 text-slate-500">$</span>
+                <span className="absolute left-4 top-3.5 text-[#FCFDFC] opacity-50">$</span>
                 <input
                   type="number"
                   value={formData.retirementGoal}

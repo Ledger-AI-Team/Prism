@@ -62,13 +62,13 @@ const PlanningWizard = () => {
               <div className="h-6 w-px bg-[#5b6a71]"></div>
               <button
                 onClick={() => navigate('/')}
-                className="text-[#6d9dbe] hover:text-white transition flex items-center"
+                className="text-[#FCFDFC] opacity-70 hover:opacity-100 transition flex items-center"
               >
                 <span className="mr-2">←</span>
                 <span>Dashboard</span>
               </button>
               <div className="h-6 w-px bg-[#5b6a71]"></div>
-              <h1 className="text-xl font-bold text-white">
+              <h1 className="text-xl font-bold text-[#FCFDFC]">
                 Prism - Financial Planning
               </h1>
             </div>
@@ -79,10 +79,10 @@ const PlanningWizard = () => {
                   className={`
                     w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium
                     ${currentStep === step.number
-                      ? 'bg-[#1a7a82] text-white'
+                      ? 'bg-[#1a7a82] text-[#FCFDFC]'
                       : currentStep > step.number
-                      ? 'bg-[#6d9dbe] text-white'
-                      : 'bg-[#5b6a71] text-[#6d9dbe]'
+                      ? 'bg-[#6d9dbe] text-[#FCFDFC]'
+                      : 'bg-[#5b6a71] text-[#FCFDFC] opacity-50'
                     }
                   `}
                 >
