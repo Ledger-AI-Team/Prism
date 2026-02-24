@@ -16,7 +16,8 @@ import { healthCheck } from './db/pool.js';
 import householdRoutes from './routes/households.js';
 import planRoutes from './routes/plans.js';
 import statementRoutes from './routes/statements.js';
-import { runMonteCarlo } from '../projects/risk-engine/src/monte-carlo.js';
+import transcriptRoutes from './routes/transcripts.js';
+import { runMonteCarlo} from '../projects/risk-engine/src/monte-carlo.js';
 import { generateQuestion } from './services/riskAIService.js';
 
 const app = express();
@@ -245,6 +246,7 @@ app.get('/api/v1/docs', (req, res) => {
 app.use('/api/v1/households', householdRoutes);
 app.use('/api/v1/plans', planRoutes);
 app.use('/api/v1/statements', statementRoutes);
+app.use('/api/v1/transcripts', transcriptRoutes);
 
 // Serve frontend (if built)
 import path from 'path';
