@@ -38,6 +38,27 @@ export default function RiskQuestionnaire({ onComplete, onCancel }: Props) {
   const progress = (questionHistory.length / maxQuestions) * 100;
 
   /**
+   * Shuffle array using Fisher-Yates algorithm
+   */
+  const shuffleArray = <T,>(array: T[]): T[] => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
+  /**
+   * Shuffle options when question changes (prevent position bias)
+   */
+  const [shuffledOptions, setShuffledOptions] = useState(currentQuestion.options);
+  
+  useEffect(() => {
+    setShuffledOptions(shuffleArray(currentQuestion.options));
+  }, [currentQuestion.id]);
+
+  /**
    * Handle option selection
    */
   const handleSelect = (optionId: string) => {
@@ -211,7 +232,7 @@ export default function RiskQuestionnaire({ onComplete, onCancel }: Props) {
 
           {/* Options */}
           <div className="space-y-3">
-            {currentQuestion.options.map((option) => (
+            {shuffledOptions.map((option) => (
               <button
                 key={option.id}
                 onClick={() => handleSelect(option.id)}

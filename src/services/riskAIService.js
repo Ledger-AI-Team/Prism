@@ -39,9 +39,13 @@ RULES:
    - 12-15: Aggressive / High risk tolerance
 
 4. Adaptive logic:
-   - If high scores so far: Test with riskier scenarios
-   - If low scores: Validate conviction with safer alternatives
-   - If inconsistent: Probe for clarity
+   - If high scores so far: Test with riskier scenarios AND switch question types to challenge
+   - If low scores: Validate conviction with safer alternatives AND use different framing
+   - If inconsistent: Probe for clarity with scenario-based questions
+   - IMPORTANT: If you detect a trend (e.g., 3+ consecutive high/low scores), intentionally challenge it:
+     * Switch question section (behavioral → scenario, or wealth → experience)
+     * Use inverse framing ("What would make you NOT...?" instead of "Would you...?")
+     * Present edge cases or stress scenarios to test conviction
 
 5. Output format (STRICT JSON):
 {
@@ -56,6 +60,8 @@ RULES:
   ],
   "rationale": "Why this question matters (compliance trail)"
 }
+
+NOTE: Options will be randomized on display to prevent position bias. Do NOT order by score.
 
 COMPLIANCE: Every question must include a rationale explaining its relevance to risk assessment (DOL PTE 2020-02).`;
 
@@ -140,13 +146,28 @@ function buildPrompt({ questionNumber, context, wealthTier, experience, totalSco
     prompt += '\n';
   }
   
+  // Pattern detection
+  const recentScores = context.slice(-3).map(c => c.score);
+  const trend = detectTrend(recentScores);
+  
   // Guidance
   if (avgScore < 5) {
-    prompt += `PATTERN: Conservative answers. Test conviction with moderate-risk scenarios.\n`;
+    prompt += `PATTERN: Conservative answers (avg ${avgScore.toFixed(1)}/15). Test conviction with moderate-risk scenarios.\n`;
   } else if (avgScore > 10) {
-    prompt += `PATTERN: Aggressive answers. Challenge with high-volatility scenarios.\n`;
+    prompt += `PATTERN: Aggressive answers (avg ${avgScore.toFixed(1)}/15). Challenge with high-volatility scenarios.\n`;
   } else {
-    prompt += `PATTERN: Balanced profile. Explore edge cases to refine placement.\n`;
+    prompt += `PATTERN: Balanced profile (avg ${avgScore.toFixed(1)}/15). Explore edge cases to refine placement.\n`;
+  }
+  
+  // Trend detection
+  if (trend === 'increasing') {
+    prompt += `⚠️ TREND ALERT: Scores increasing (${recentScores.join(' → ')}). Challenge this upward trend with a stress scenario or inverse framing.\n`;
+  } else if (trend === 'decreasing') {
+    prompt += `⚠️ TREND ALERT: Scores decreasing (${recentScores.join(' → ')}). Test if this is conviction or caution. Switch question type.\n`;
+  } else if (trend === 'consistently-high') {
+    prompt += `⚠️ TREND ALERT: Consistently high scores (${recentScores.join(', ')}). Present a risky edge case to validate conviction.\n`;
+  } else if (trend === 'consistently-low') {
+    prompt += `⚠️ TREND ALERT: Consistently low scores (${recentScores.join(', ')}). Present a safe opportunity to test if truly conservative.\n`;
   }
   
   // Sections to cover
@@ -161,6 +182,29 @@ function buildPrompt({ questionNumber, context, wealthTier, experience, totalSco
   prompt += `\nGenerate Q#${questionNumber} now. Output ONLY valid JSON (no markdown, no explanation).`;
   
   return prompt;
+}
+
+/**
+ * Detect scoring trends to challenge patterns
+ */
+function detectTrend(scores) {
+  if (scores.length < 3) return 'insufficient-data';
+  
+  const [a, b, c] = scores;
+  
+  // Consistently high (all >= 10)
+  if (scores.every(s => s >= 10)) return 'consistently-high';
+  
+  // Consistently low (all <= 5)
+  if (scores.every(s => s <= 5)) return 'consistently-low';
+  
+  // Increasing trend
+  if (a < b && b < c) return 'increasing';
+  
+  // Decreasing trend
+  if (a > b && b > c) return 'decreasing';
+  
+  return 'mixed';
 }
 
 /**
