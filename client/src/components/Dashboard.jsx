@@ -59,14 +59,14 @@ const Dashboard = () => {
       id: 'narrative',
       name: 'Narrative',
       tagline: 'Turn data into stories. Go Farther.',
-      description: 'Performance reports, tax summaries, and compliance exports',
+      description: 'Quarterly reviews, annual reports, and tax summaries',
       icon: '📖',
       route: '/reports',
-      status: 'coming_soon',
+      status: 'active',
       features: [
         'Quarterly performance reports',
-        'Tax gain/loss summaries',
-        'Compliance-ready exports',
+        'Annual tax summaries',
+        'PDF generation with Farther branding',
       ],
     },
     {

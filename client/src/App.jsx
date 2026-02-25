@@ -18,6 +18,7 @@ import PlanningWizard from './components/PlanningWizard';
 import RiskAssessment from './components/RiskAssessment';
 import ProposifyBuilder from './components/ProposifyBuilder';
 import FocusDashboard from './components/FocusDashboard';
+import NarrativeReports from './components/NarrativeReports';
 import ErrorBoundary from './components/ErrorBoundary';
 
 // Future tools (placeholders)
@@ -58,7 +59,7 @@ function App() {
 
         {/* Focus - Portfolio Analytics */}
         <Route path="/portfolio" element={<FocusDashboard />} />
-        <Route path="/reports" element={<ComingSoon toolName="Narrative" />} />
+        <Route path="/reports" element={<NarrativeReports />} />
         <Route path="/alternatives" element={<ComingSoon toolName="Beyond" />} />
 
         {/* 404 Redirect */}
