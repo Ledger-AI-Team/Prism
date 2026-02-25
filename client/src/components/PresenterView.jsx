@@ -7,6 +7,7 @@
 import { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, Maximize2, ArrowLeft, Loader2, Plus, Monitor } from 'lucide-react';
 import axios from 'axios';
+import AISlideRenderer from './AISlideRenderer';
 
 const API_URL = 'https://farther-prism-production.up.railway.app';
 
@@ -127,18 +128,38 @@ export default function PresenterView() {
       return;
     }
 
-    const slides = parseOutline(outlineText);
+    setLoading(true);
     
-    // Create presentation object locally (no API call needed for custom)
-    setCurrentPres({
-      id: `custom-${Date.now()}`,
-      title: slides[0]?.title || 'Custom Presentation',
-      presentation_type: 'custom',
-      slides: slides,
-      created_at: new Date().toISOString(),
-    });
-    setCurrentSlide(0);
-    setStep('view');
+    try {
+      // Call AI generation API
+      const response = await axios.post(`${API_URL}/api/v1/presenter/generate-ai`, {
+        rawText: outlineText,
+        title: null, // Let AI determine
+        clientName: null,
+        includeCharts: true,
+        brandingStyle: 'farther',
+      });
+
+      const presentation = response.data.presentation;
+
+      // Create presentation object
+      setCurrentPres({
+        id: `ai-${Date.now()}`,
+        title: presentation.title,
+        subtitle: presentation.subtitle,
+        presentation_type: 'ai_generated',
+        slides: presentation.slides,
+        metadata: presentation.metadata,
+        created_at: new Date().toISOString(),
+      });
+      setCurrentSlide(0);
+      setStep('view');
+    } catch (error) {
+      console.error('AI generation failed:', error);
+      alert('Failed to generate presentation: ' + (error.response?.data?.message || error.message));
+    } finally {
+      setLoading(false);
+    }
   };
 
   const slides = currentPres?.slides || [];
@@ -306,10 +327,17 @@ Go Farther Together`}
               />
               <button
                 onClick={createFromOutline}
-                disabled={!outlineText.trim()}
-                className="w-full mt-4 px-6 py-3 bg-[#1a7a82] text-[#FCFDFC] rounded-lg hover:bg-[#1a7a82]/80 font-bold disabled:opacity-50"
+                disabled={!outlineText.trim() || loading}
+                className="w-full mt-4 px-6 py-3 bg-[#1a7a82] text-[#FCFDFC] rounded-lg hover:bg-[#1a7a82]/80 font-bold disabled:opacity-50 flex items-center justify-center gap-2"
               >
-                Generate Slides
+                {loading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    AI Generating Slides...
+                  </>
+                ) : (
+                  'Generate Slides with AI'
+                )}
               </button>
             </div>
 
@@ -386,12 +414,29 @@ Go Farther Together`}
 
         {/* Slide Content */}
         <div className="flex-1 flex items-center justify-center p-8">
-          <div className={`${fullscreen ? 'w-full h-full' : 'w-full max-w-5xl aspect-[16/9]'} bg-[#5b6a71] rounded-lg p-12 flex flex-col justify-center shadow-2xl relative`}>
+          <div className={`${fullscreen ? 'w-full h-full' : 'w-full max-w-5xl aspect-[16/9]'} bg-[#5b6a71] rounded-lg shadow-2xl relative overflow-hidden`}>
             {/* Farther logo watermark */}
-            <div className="absolute top-6 right-8 text-[#1a7a82] font-bold text-lg opacity-40">FARTHER</div>
+            <div className="absolute top-6 right-8 text-[#1a7a82] font-bold text-lg opacity-40 z-10">FARTHER</div>
 
-            {/* Title Slide */}
-            {slide.type === 'title' && (
+            {/* AI-Generated Slides (use new renderer) */}
+            {currentPres.presentation_type === 'ai_generated' ? (
+              <AISlideRenderer 
+                slide={slide} 
+                branding={{
+                  primary: '#1a7a82',
+                  secondary: '#2d9da6',
+                  accent: '#40c0ca',
+                  text: '#FCFDFC',
+                  background: '#333333',
+                  cardBg: '#5b6a71',
+                }}
+              />
+            ) : (
+              <div className="p-12 flex flex-col justify-center h-full">
+                {/* Legacy renderer for portfolio-generated presentations */}
+                
+                {/* Title Slide */}
+                {slide.type === 'title' && (
               <div className="text-center">
                 <h1 className="text-5xl font-bold text-[#FCFDFC] mb-6">{slide.title}</h1>
                 {slide.subtitle && <p className="text-2xl text-[#1a7a82] font-medium">{slide.subtitle}</p>}
@@ -479,8 +524,11 @@ Go Farther Together`}
               </div>
             )}
 
+              </div>
+            )}
+
             {/* Slide number */}
-            <div className="absolute bottom-6 right-8 text-[#FCFDFC] opacity-40 text-sm">
+            <div className="absolute bottom-6 right-8 text-[#FCFDFC] opacity-40 text-sm z-10">
               {currentSlide + 1} / {slides.length}
             </div>
           </div>
