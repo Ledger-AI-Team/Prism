@@ -21,27 +21,71 @@ export default function MonteCarloResults({ data, onUpdate, onNext, onPrev }) {
     setError(null);
 
     try {
-      const { clientData, portfolio } = data;
+      const { clientData, portfolioData } = data;
+      const portfolio = portfolioData || [];
       const totalValue = portfolio.reduce((sum, h) => sum + h.value, 0);
       
       // Calculate years until retirement
       const yearsToRetirement = clientData.retirementAge - clientData.age;
+      const currentAge = clientData.age;
       
-      const params = {
-        initialValue: clientData.currentSavings || totalValue,
-        expectedReturn: 0.08, // 8% default
-        volatility: 0.15, // 15% default
-        years: yearsToRetirement,
-        annualContribution: 0,
-        annualWithdrawal: clientData.retirementGoal || 0,
-        numSimulations: 10000,
+      // Build scenario object for new Monte Carlo API
+      const scenario = {
+        people: [{
+          firstName: clientData.firstName,
+          lastName: clientData.lastName,
+          dateOfBirth: new Date(new Date().getFullYear() - currentAge, 0, 1).toISOString().split('T')[0],
+          relationship: 'primary',
+        }],
+        accounts: [{
+          id: '1',
+          account_type: 'taxable',
+          current_value: totalValue,
+        }],
+        incomeStreams: [],
+        expenseStreams: [{
+          category: 'living',
+          amount: (clientData.monthlyExpenses || clientData.retirementGoal / 12),
+          frequency: 'monthly',
+          description: 'Living expenses',
+          isDiscretionary: false,
+        }],
+        assumptions: {
+          stockAllocation: 0.60, // Preservation-first (Farther philosophy)
+          inflationRate: 0.03,
+          taxAlpha: 0.02, // Farther's 1-3% tax advantage
+        },
       };
 
-      const response = await axios.post(`${API_URL}/api/monte-carlo`, params);
-      const resultData = response.data;
+      const payload = {
+        scenarioId: `temp-${Date.now()}`, // Temporary ID for now
+        scenario,
+        simulations: 10000,
+        years: Math.max(yearsToRetirement, 30), // At least 30 years
+      };
+
+      const response = await axios.post(`${API_URL}/api/v1/monte-carlo/run`, payload);
+      const resultData = response.data.result;
       
-      setResults(resultData);
-      onUpdate('monteCarloResults', resultData);
+      // Transform to expected format
+      const transformed = {
+        results: {
+          successRate: resultData.successRate * 100,
+          medianFinalValue: resultData.median,
+          percentile5: resultData.percentile5,
+          percentile95: resultData.percentile95,
+          executionTimeMs: response.data.meta.duration,
+        },
+        parameters: {
+          initialValue: totalValue,
+          expectedReturn: 0.08,
+          volatility: 0.18,
+          years: payload.years,
+        },
+      };
+      
+      setResults(transformed);
+      onUpdate('monteCarloResults', transformed);
     } catch (err) {
       setError(err.message || 'Failed to run simulation');
       console.error('Monte Carlo Error:', err);
