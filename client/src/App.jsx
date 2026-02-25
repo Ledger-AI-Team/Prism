@@ -16,6 +16,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Dashboard from './components/Dashboard';
 import PlanningWizard from './components/PlanningWizard';
 import RiskAssessment from './components/RiskAssessment';
+import ProposifyBuilder from './components/ProposifyBuilder';
 import ErrorBoundary from './components/ErrorBoundary';
 
 // Future tools (placeholders)
@@ -51,9 +52,11 @@ function App() {
         {/* Risk Assessment */}
         <Route path="/risk" element={<RiskAssessment />} />
 
+        {/* Proposify */}
+        <Route path="/proposify" element={<ProposifyBuilder />} />
+
         {/* Coming Soon Tools */}
         <Route path="/portfolio" element={<ComingSoon toolName="Focus" />} />
-        <Route path="/proposals" element={<ComingSoon toolName="Proposify" />} />
         <Route path="/reports" element={<ComingSoon toolName="Narrative" />} />
         <Route path="/alternatives" element={<ComingSoon toolName="Beyond" />} />
 
