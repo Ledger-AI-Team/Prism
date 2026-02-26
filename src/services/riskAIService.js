@@ -76,6 +76,12 @@ export async function generateQuestion({
   totalScore = 0,
 }) {
   try {
+    // Validate API key
+    if (!process.env.ANTHROPIC_API_KEY) {
+      console.error('[Risk AI] ANTHROPIC_API_KEY not set - using fallback questions');
+      throw new Error('ANTHROPIC_API_KEY not configured');
+    }
+
     const userPrompt = buildPrompt({
       questionNumber,
       context,
@@ -84,10 +90,12 @@ export async function generateQuestion({
       totalScore,
     });
 
+    console.log(`[Risk AI] Generating Q${questionNumber}, Context: ${context.length} answers, Wealth: ${wealthTier}, Avg Score: ${context.length > 0 ? (totalScore / context.length).toFixed(1) : 'N/A'}`);
+
     const response = await anthropic.messages.create({
       model: 'claude-3-5-sonnet-20240620',
       max_tokens: 1024,
-      temperature: 0.7, // Slightly creative for variety
+      temperature: 0.8, // Higher temp for more variety
       system: SYSTEM_PROMPT,
       messages: [
         {
@@ -112,6 +120,8 @@ export async function generateQuestion({
       throw new Error('Invalid question structure from Claude');
     }
 
+    console.log(`[Risk AI] Generated Q${questionNumber}: "${question.text.substring(0, 60)}..." (section: ${question.section})`);
+    
     return question;
     
   } catch (error) {

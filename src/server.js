@@ -133,8 +133,12 @@ app.post('/api/monte-carlo', (req, res) => {
 
 // Risk Profile - AI Question Generation
 app.post('/api/risk/generate-question', async (req, res) => {
+  const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  
   try {
     const { questionNumber, context, wealthTier, experience, totalScore } = req.body;
+
+    console.log(`[Risk API ${requestId}] Generating Q${questionNumber}, Context length: ${context?.length || 0}, Wealth: ${wealthTier}`);
 
     // Validate inputs
     if (!questionNumber || questionNumber < 1 || questionNumber > 15) {
@@ -143,27 +147,39 @@ app.post('/api/risk/generate-question', async (req, res) => {
       });
     }
 
-    // Generate question using Claude
+    // Ensure context is always an array (prevent undefined issues)
+    const safeContext = Array.isArray(context) ? context : [];
+
+    // Generate question using Claude (no caching - always fresh)
     const question = await generateQuestion({
       questionNumber,
-      context: context || [],
+      context: safeContext,
       wealthTier: wealthTier || 'affluent',
       experience: experience || 'intermediate',
       totalScore: totalScore || 0,
     });
 
+    console.log(`[Risk API ${requestId}] Success - Q${questionNumber} generated`);
+
+    // Never cache this endpoint
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    
     res.json({
       question,
       metadata: {
         model: 'claude-3-5-sonnet-20240620',
         timestamp: new Date().toISOString(),
+        requestId,
       },
     });
   } catch (error) {
-    console.error('[Risk AI] Error:', error);
+    console.error(`[Risk API ${requestId}] Error:`, error);
     res.status(500).json({
       error: 'Failed to generate question',
       detail: error.message,
+      requestId,
     });
   }
 });
