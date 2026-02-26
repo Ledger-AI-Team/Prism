@@ -23,6 +23,7 @@ import focusRoutes from './routes/focus.js';
 import narrativeRoutes from './routes/narrative.js';
 import presenterRoutes from './routes/presenter.js';
 import beyondRoutes from './routes/beyond.js';
+import backtestRoutes from './routes/backtest.js';
 import { runMonteCarlo} from '../projects/risk-engine/src/monte-carlo.js';
 import { generateQuestion } from './services/riskAIService.js';
 
@@ -259,6 +260,7 @@ app.use('/api/v1/focus', focusRoutes);
 app.use('/api/v1/narrative', narrativeRoutes);
 app.use('/api/v1/presenter', presenterRoutes);
 app.use('/api/v1/beyond', beyondRoutes);
+app.use('/api/v1/backtest', backtestRoutes);
 
 // Serve frontend (if built)
 import path from 'path';

@@ -12,6 +12,7 @@
 import React from 'react';
 import { BarChart, Bar, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import type { AssessmentResult } from '../types/risk';
+import BacktestVisualization from './BacktestVisualization';
 
 interface Props {
   result: AssessmentResult;
@@ -167,6 +168,11 @@ export default function RiskResults({ result, onRestart, onClose }: Props) {
               </p>
             </div>
           </div>
+        </div>
+
+        {/* Historical Backtest */}
+        <div className="mb-8">
+          <BacktestVisualization baseAllocation={recommendedTier.allocation} />
         </div>
 
         {/* Behavioral Investor Type (BIT) */}
