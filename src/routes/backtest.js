@@ -6,7 +6,7 @@
  */
 
 import express from 'express';
-import backtestService from '../services/backtest-service.js';
+import backtestServiceV2 from '../services/backtest-service-v2.js';
 
 const router = express.Router();
 
@@ -25,32 +25,34 @@ const router = express.Router();
  */
 router.post('/portfolio', async (req, res) => {
   try {
-    const {
+    let {
       allocation,
       initialCapital = 100000,
       startDate = '1999-01-01',
       endDate = null,
-      rebalanceFrequency = 'monthly',
+      options = {},
     } = req.body;
 
     if (!allocation) {
       return res.status(400).json({ error: 'Missing allocation' });
     }
 
-    // Validate allocation sums to 100
-    const total = Object.values(allocation).reduce((sum, v) => sum + v, 0);
-    if (Math.abs(total - 100) > 0.01) {
-      return res.status(400).json({ error: `Allocation must sum to 100 (got ${total})` });
+    // Support both formats:
+    // 1. Simple: { stocks: 60, bonds: 30, alternatives: 5, cash: 5 }
+    // 2. Detailed: [{ assetClassId: 'US_EQUITY', weight: 0.60 }, ...]
+    if (!Array.isArray(allocation)) {
+      // Convert simple to detailed
+      allocation = backtestServiceV2.constructor.convertSimpleAllocation(allocation);
     }
 
-    console.log(`[Backtest API] Running backtest: ${JSON.stringify(allocation)}`);
+    console.log(`[Backtest API] Running backtest with ${allocation.length} asset classes`);
 
-    const result = await backtestService.backtestPortfolio(
+    const result = await backtestServiceV2.backtestPortfolio(
       allocation,
       initialCapital,
       startDate,
       endDate,
-      rebalanceFrequency
+      options
     );
 
     res.json(result);
@@ -78,24 +80,34 @@ router.post('/portfolio', async (req, res) => {
  */
 router.post('/compare', async (req, res) => {
   try {
-    const {
+    let {
       allocations,
       initialCapital = 100000,
       startDate = '1999-01-01',
       endDate = null,
+      options = {},
     } = req.body;
 
     if (!allocations || !Array.isArray(allocations)) {
       return res.status(400).json({ error: 'Missing allocations array' });
     }
 
+    // Convert simple allocations to detailed format
+    allocations = allocations.map(alloc => {
+      if (!Array.isArray(alloc)) {
+        return backtestServiceV2.constructor.convertSimpleAllocation(alloc);
+      }
+      return alloc;
+    });
+
     console.log(`[Backtest API] Comparing ${allocations.length} allocations`);
 
-    const results = await backtestService.compareAllocations(
+    const results = await backtestServiceV2.compareAllocations(
       allocations,
       initialCapital,
       startDate,
-      endDate
+      endDate,
+      options
     );
 
     res.json(results);

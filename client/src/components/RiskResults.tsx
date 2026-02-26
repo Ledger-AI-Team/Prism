@@ -12,7 +12,7 @@
 import React from 'react';
 import { BarChart, Bar, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import type { AssessmentResult } from '../types/risk';
-import BacktestVisualization from './BacktestVisualization';
+import BacktestVisualizationV2 from './BacktestVisualizationV2';
 
 interface Props {
   result: AssessmentResult;
@@ -172,7 +172,16 @@ export default function RiskResults({ result, onRestart, onClose }: Props) {
 
         {/* Historical Backtest */}
         <div className="mb-8">
-          <BacktestVisualization baseAllocation={recommendedTier.allocation} />
+          <BacktestVisualizationV2 baseAllocation={[
+            { assetClassId: 'US_EQUITY', weight: recommendedTier.allocation.stocks * 0.70 / 100 },
+            { assetClassId: 'INTL_DEVELOPED', weight: recommendedTier.allocation.stocks * 0.20 / 100 },
+            { assetClassId: 'EMERGING_MARKETS', weight: recommendedTier.allocation.stocks * 0.10 / 100 },
+            { assetClassId: 'CORE_BONDS', weight: recommendedTier.allocation.bonds * 0.80 / 100 },
+            { assetClassId: 'TREASURY_LONG', weight: recommendedTier.allocation.bonds * 0.20 / 100 },
+            { assetClassId: 'REAL_ESTATE', weight: recommendedTier.allocation.alternatives * 0.60 / 100 },
+            { assetClassId: 'COMMODITIES', weight: recommendedTier.allocation.alternatives * 0.40 / 100 },
+            { assetClassId: 'CASH', weight: recommendedTier.allocation.cash / 100 },
+          ]} />
         </div>
 
         {/* Behavioral Investor Type (BIT) */}
