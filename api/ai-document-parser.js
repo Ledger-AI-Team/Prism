@@ -24,55 +24,54 @@ export async function parseDocumentWithAI(filePath, fileType) {
     const fileBuffer = fs.readFileSync(filePath);
     const base64Data = fileBuffer.toString('base64');
     
-    // Determine media type
-    const mediaTypeMap = {
-      'pdf': 'application/pdf',
-      'png': 'image/png',
-      'jpg': 'image/jpeg',
-      'jpeg': 'image/jpeg',
-      'webp': 'image/webp',
-      'csv': 'text/csv',
-      'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      'xls': 'application/vnd.ms-excel',
-    };
-    
-    const mediaType = mediaTypeMap[fileType] || 'application/octet-stream';
-    
-    // For CSV/Excel, read as text first (more efficient)
+    // Handle different file types
     let documentContent;
-    if (fileType === 'csv' || fileType === 'txt') {
-      documentContent = fileBuffer.toString('utf8');
-    }
+    let messageContent = [];
     
     // Build Claude prompt
     const prompt = buildExtractionPrompt();
+    messageContent.push({
+      type: 'text',
+      text: prompt,
+    });
     
-    // Call Claude with vision (using latest model)
+    if (fileType === 'csv' || fileType === 'txt') {
+      // Text-based files: send as text
+      documentContent = fileBuffer.toString('utf8');
+      messageContent[0].text += `\n\nDocument content:\n${documentContent}`;
+    } else if (fileType === 'pdf') {
+      // PDFs: NOT supported by Claude vision - need conversion
+      throw new Error('PDF parsing requires PDF-to-image conversion. Please upload CSV or image files for AI parsing. Alternatively, use the custodian-specific CSV parsers which work without AI.');
+    } else if (['png', 'jpg', 'jpeg', 'webp', 'gif'].includes(fileType)) {
+      // Images: send to vision API
+      const mediaTypeMap = {
+        'png': 'image/png',
+        'jpg': 'image/jpeg',
+        'jpeg': 'image/jpeg',
+        'webp': 'image/webp',
+        'gif': 'image/gif',
+      };
+      
+      messageContent.push({
+        type: 'image',
+        source: {
+          type: 'base64',
+          media_type: mediaTypeMap[fileType],
+          data: base64Data,
+        },
+      });
+    } else {
+      throw new Error(`Unsupported file type: ${fileType}. Supported: CSV (text), PNG/JPG/WEBP (images).`);
+    }
+    
+    // Call Claude
     const message = await anthropic.messages.create({
       model: 'claude-3-5-sonnet-20240620',
       max_tokens: 4096,
       messages: [
         {
           role: 'user',
-          content: documentContent ? [
-            {
-              type: 'text',
-              text: `${prompt}\n\nDocument content:\n${documentContent}`,
-            },
-          ] : [
-            {
-              type: 'text',
-              text: prompt,
-            },
-            {
-              type: 'image',
-              source: {
-                type: 'base64',
-                media_type: mediaType,
-                data: base64Data,
-              },
-            },
-          ],
+          content: messageContent,
         },
       ],
     });

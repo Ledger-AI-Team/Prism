@@ -43,13 +43,10 @@ export async function parsePortfolioFile(filePath, fileType, useAI = true) {
     } else if (fileType === 'xlsx' || fileType === 'xls' || filePath.endsWith('.xlsx') || filePath.endsWith('.xls')) {
       result = await parseExcel(filePath);
     } else if (fileType === 'pdf' || filePath.endsWith('.pdf')) {
-      // For PDF, ONLY use AI (basic parsing doesn't support PDF)
-      if (!process.env.ANTHROPIC_API_KEY) {
-        throw new Error('PDF parsing requires AI. Please set ANTHROPIC_API_KEY environment variable.');
-      }
-      return await parseDocumentWithAI(filePath, fileType);
+      // PDF not supported - Claude vision API doesn't accept PDFs directly
+      throw new Error('PDF upload not currently supported. Please export your statement as CSV from your broker (Schwab, Fidelity, Vanguard, etc.) and upload the CSV file instead. Most brokers offer CSV download in their statement section.');
     } else {
-      throw new Error('Unsupported file type. Please upload CSV, Excel, or PDF.');
+      throw new Error('Unsupported file type. Please upload CSV or Excel files.');
     }
     
     // Optionally enhance basic results with AI
