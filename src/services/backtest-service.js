@@ -12,8 +12,8 @@
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 
 const s3Client = new S3Client({
-  endpoint: process.env.BACKBLAZE_ENDPOINT || 'https://s3.us-west-004.backblazeb2.com',
-  region: 'us-west-004',
+  endpoint: `https://${process.env.BACKBLAZE_ENDPOINT || 's3.us-west-004.backblazeb2.com'}`,
+  region: process.env.BACKBLAZE_REGION || 'us-west-004',
   credentials: {
     accessKeyId: process.env.BACKBLAZE_KEY_ID,
     secretAccessKey: process.env.BACKBLAZE_APPLICATION_KEY,
@@ -88,14 +88,14 @@ class BacktestService {
    */
   async loadMarketData(startDate, endDate) {
     const tickers = [
-      'SPY', 'EFA', 'EEM', 'AGG', 'TLT', 'VNQ', 'GLD', 'SHY',
+      'SPY', 'EFA', 'EEM', 'AGG', 'TLT', 'VNQ', 'GLD',
     ];
 
     const data = {};
 
     for (const ticker of tickers) {
       try {
-        const key = `securities/daily-prices/${ticker}.json`;
+        const key = `market-data/daily-prices/${ticker}.csv`;
         const command = new GetObjectCommand({
           Bucket: BUCKET_NAME,
           Key: key,
@@ -103,16 +103,27 @@ class BacktestService {
 
         const response = await s3Client.send(command);
         const body = await response.Body.transformToString();
-        const tickerData = JSON.parse(body);
+        
+        // Parse CSV (date,open,high,low,close,volume)
+        const lines = body.trim().split('\n');
+        const headers = lines[0].split(',');
+        const tickerData = [];
+        
+        for (let i = 1; i < lines.length; i++) {
+          const values = lines[i].split(',');
+          if (values.length >= 5) {
+            tickerData.push({
+              date: values[0],
+              close: parseFloat(values[4]),
+              return: 0, // Will be calculated if needed
+            });
+          }
+        }
 
         // Filter by date range
         data[ticker] = tickerData.filter(d => {
           return d.date >= startDate && d.date <= endDate;
-        }).map(d => ({
-          date: d.date,
-          close: d.close,
-          return: d.return || 0,
-        }));
+        });
 
         console.log(`[Backtest] Loaded ${ticker}: ${data[ticker].length} days`);
       } catch (error) {
@@ -153,9 +164,10 @@ class BacktestService {
       weights.GLD = allocation.alternatives * 0.40 / 100;
     }
 
-    // Cash (5% → SHY)
+    // Cash (5% → AGG short-term bonds proxy)
     if (allocation.cash > 0) {
-      weights.SHY = allocation.cash / 100;
+      // Add cash allocation to AGG (aggregate bonds as cash proxy)
+      weights.AGG = (weights.AGG || 0) + (allocation.cash / 100);
     }
 
     return weights;
