@@ -9,3 +9,4 @@ cmds = ['cd client && npm run build']
 
 [start]
 cmd = 'node src/server.js'
+# Force rebuild - Fri Feb 27 14:04:38 UTC 2026
