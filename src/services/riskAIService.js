@@ -93,7 +93,7 @@ export async function generateQuestion({
     console.log(`[Risk AI] Generating Q${questionNumber}, Context: ${context.length} answers, Wealth: ${wealthTier}, Avg Score: ${context.length > 0 ? (totalScore / context.length).toFixed(1) : 'N/A'}`);
 
     const response = await anthropic.messages.create({
-      model: 'claude-3-5-sonnet-20240620',
+      model: 'claude-3-5-sonnet-20241022', // Updated model name
       max_tokens: 1024,
       temperature: 0.8, // Higher temp for more variety
       system: SYSTEM_PROMPT,
