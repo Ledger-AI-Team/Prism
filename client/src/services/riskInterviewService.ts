@@ -17,23 +17,19 @@ export async function generateNextQuestion(
   questionNumber: number
 ): Promise<Question> {
   try {
-    // Build minimal context for token efficiency
-    const minimalContext = context.questionHistory.map(h => ({
-      q: h.question.text.substring(0, 100), // Truncate for brevity
-      a: h.question.options.find(o => o.id === h.answer.optionId)?.text.substring(0, 50),
-      score: h.answer.score,
-      section: h.question.section,
-    }));
-
-    const response = await fetch(`${API_URL}/api/risk/generate-question`, {
+    // Use question bank service (no AI needed)
+    const response = await fetch(`${API_URL}/api/risk/question-from-bank`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         questionNumber,
-        context: minimalContext,
         wealthTier: context.currentWealthTier,
         experience: context.currentExperience,
-        totalScore: context.answers.reduce((sum, a) => sum + a.score, 0),
+        questionHistory: context.questionHistory.map(h => ({
+          id: h.question.id,
+          section: h.question.section,
+          score: h.answer.score,
+        })),
       }),
     });
 
@@ -45,7 +41,7 @@ export async function generateNextQuestion(
     return data.question;
     
   } catch (error) {
-    console.error('[Interview Service] Failed to generate question:', error);
+    console.error('[Interview Service] Failed to get question from bank:', error);
     return getFallbackQuestion(questionNumber);
   }
 }

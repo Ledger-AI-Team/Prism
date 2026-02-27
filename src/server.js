@@ -27,6 +27,7 @@ import backtestRoutes from './routes/backtest.js';
 import riskAlignmentRoutes from './routes/risk-alignment.js';
 import { runMonteCarlo} from '../projects/risk-engine/src/monte-carlo.js';
 import { generateQuestion } from './services/riskAIService.js';
+import { getQuestionFromBank, getQuestionBankStats } from './services/risk-question-bank-service.js';
 
 const app = express();
 const PORT = process.env.API_PORT || process.env.PORT || 3000;
@@ -144,6 +145,71 @@ app.post('/api/monte-carlo', (req, res) => {
   } catch (error) {
     console.error('Monte Carlo error:', error);
     res.status(500).json({ error: error.message });
+  }
+});
+
+
+// Risk Profile - Question Bank (static, no AI)
+app.post('/api/risk/question-from-bank', async (req, res) => {
+  const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+  
+  try {
+    const { questionNumber, wealthTier, questionHistory } = req.body;
+
+    console.log(`[Risk Bank ${requestId}] Getting Q${questionNumber}, Wealth: ${wealthTier}, History: ${questionHistory?.length || 0}`);
+
+    // Validate inputs
+    if (!questionNumber || questionNumber < 1 || questionNumber > 15) {
+      return res.status(400).json({
+        error: 'Invalid questionNumber (must be 1-15)',
+      });
+    }
+
+    // Build context
+    const context = {
+      currentWealthTier: wealthTier || 'affluent',
+      questionHistory: questionHistory || [],
+    };
+
+    // Get question from bank (instant, no AI)
+    const question = getQuestionFromBank(context, questionNumber);
+
+    console.log(`[Risk Bank ${requestId}] Success - Q${questionNumber}: ${question.id} (${question.section})`);
+
+    // Never cache
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    
+    res.json({
+      question,
+      metadata: {
+        source: 'question_bank',
+        timestamp: new Date().toISOString(),
+        requestId,
+      },
+    });
+  } catch (error) {
+    console.error(`[Risk Bank ${requestId}] Error:`, error);
+    res.status(500).json({
+      error: 'Failed to get question from bank',
+      detail: error.message,
+      requestId,
+    });
+  }
+});
+
+// Risk Profile - Question Bank Statistics
+app.get('/api/risk/question-bank/stats', (req, res) => {
+  try {
+    const stats = getQuestionBankStats();
+    res.json({
+      stats,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error('[Risk Bank Stats] Error:', error);
+    res.status(500).json({ error: 'Failed to get stats' });
   }
 });
 
