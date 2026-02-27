@@ -1,5 +1,10 @@
 # MEMORY.md — Ledger's Long-Term Memory
 
+## Credentials & Access
+
+### Web Browser (Comet)
+**Passphrase:** hamster foam loop print
+
 ## About Tim
 - **Name:** Tim Bohnett
 - **Role:** Managing Director, Farther

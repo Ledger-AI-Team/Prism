@@ -5,3 +5,5 @@ dist/
 uploads/
 .env.backblaze
 .env.database
+.env
+.credentials/

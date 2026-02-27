@@ -38,4 +38,13 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 ---
 
 Add whatever helps you do your job. This is your cheat sheet.
-# GitHub monitoring disabled (no sudo access in container)
+
+---
+
+## System Notes
+
+### GitHub Monitoring
+**Status:** Disabled (2026-02-27)
+**Reason:** No sudo access in container, GitHub CLI unavailable
+**Action:** Cron notifications silenced to reduce noise
+**Alternative:** Check GitHub manually or configure host-level monitoring
